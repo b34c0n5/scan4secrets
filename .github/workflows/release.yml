@@ -4,14 +4,11 @@ on:
   push:
     branches:
       - main
-  release:
-    types: [created]
+  workflow_dispatch:
 
 jobs:
   build-windows:
-    name: Build Windows Executable
     runs-on: windows-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -29,54 +26,34 @@ jobs:
       - name: Build EXE
         run: pyinstaller --onefile scan4secrets.py
 
-      - name: Upload EXE
+      - name: Upload Windows Artifact
         uses: actions/upload-artifact@v3
         with:
           name: scan4secrets-windows
           path: dist/scan4secrets.exe
 
   build-linux:
-    name: Build Linux DEB
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install Python and fpm
+      - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ruby ruby-dev python3 python3-pip build-essential
+          sudo apt-get install -y ruby ruby-dev python3-pip build-essential
           sudo gem install --no-document fpm
           pip install -r requirements.txt
 
-      - name: Create DEB package
+      - name: Create DEB Package
         run: |
           mkdir -p scan4secrets/usr/local/bin
           cp scan4secrets.py scan4secrets/usr/local/bin/scan4secrets
           chmod +x scan4secrets/usr/local/bin/scan4secrets
           fpm -s dir -t deb -n scan4secrets -v 1.0.0 -C scan4secrets .
 
-      - name: Upload DEB
+      - name: Upload Linux Artifact
         uses: actions/upload-artifact@v3
         with:
           name: scan4secrets-linux
           path: ./*.deb
-
-  release:
-    name: Publish Release
-    needs: [build-windows, build-linux]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          path: dist
-
-      - name: Publish to GitHub Releases
-        uses: softprops/action-gh-release@v1
-        with:
-          files: dist/**/* 
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
