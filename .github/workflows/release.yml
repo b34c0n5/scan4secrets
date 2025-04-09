@@ -1,91 +1,82 @@
-name: Build and Release
+name: Build & Release
 
 on:
   push:
-    branches: [main]
-    paths:
-      - "patterns.json"
-      - "scan4secrets.py"
-      - ".github/workflows/**"
-  workflow_dispatch:
+    branches:
+      - main
+  release:
+    types: [created]
 
 jobs:
   build-windows:
-    runs-on: windows-latest
     name: Build Windows Executable
+    runs-on: windows-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
-          pip install pyinstaller
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
 
       - name: Build EXE
         run: pyinstaller --onefile scan4secrets.py
 
-      - name: Upload EXE artifact
-        uses: actions/upload-artifact@v3
+      - name: Upload EXE
+        uses: actions/upload-artifact@v3.1.3
         with:
           name: scan4secrets-windows
           path: dist/scan4secrets.exe
 
   build-linux:
+    name: Build Linux DEB
     runs-on: ubuntu-latest
-    name: Package for Debian (.deb)
 
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: Install dependencies
+      - name: Install Python and fpm
         run: |
-          pip install -r requirements.txt
-          pip install pyinstaller
-          sudo apt-get update && sudo apt-get install -y ruby-dev build-essential
+          sudo apt-get update
+          sudo apt-get install -y ruby ruby-dev python3 python3-pip build-essential
           sudo gem install --no-document fpm
+          pip install -r requirements.txt
 
-      - name: Build binary
-        run: pyinstaller --onefile scan4secrets.py
-
-      - name: Package as .deb
+      - name: Create DEB package
         run: |
-          mkdir -p deb-package/usr/local/bin
-          cp dist/scan4secrets deb-package/usr/local/bin/scan4secrets
-          fpm -s dir -t deb -n scan4secrets -v 1.0 deb-package/
+          mkdir -p scan4secrets/usr/local/bin
+          cp scan4secrets.py scan4secrets/usr/local/bin/scan4secrets
+          chmod +x scan4secrets/usr/local/bin/scan4secrets
+          fpm -s dir -t deb -n scan4secrets -v 1.0.0 -C scan4secrets .
 
-      - name: Upload DEB artifact
-        uses: actions/upload-artifact@v3
+      - name: Upload DEB
+        uses: actions/upload-artifact@v3.1.3
         with:
           name: scan4secrets-linux
-          path: "*.deb"
+          path: ./*.deb
 
   release:
+    name: Publish Release
     needs: [build-windows, build-linux]
     runs-on: ubuntu-latest
-    name: Create GitHub Release
 
     steps:
-      - name: Download Artifacts
-        uses: actions/download-artifact@v3
+      - name: Download artifacts
+        uses: actions/download-artifact@v3.0.2
         with:
           path: dist
 
-      - name: Create Release
+      - name: Publish to GitHub Releases
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v${{ github.run_number }}
-          name: Release ${{ github.run_number }}
           files: dist/**/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
