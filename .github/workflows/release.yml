@@ -1,0 +1,63 @@
+name: Build and Release
+
+on:
+  push:
+    paths:
+      - "patterns.json"
+      - "scan4secrets.py"
+      - ".github/workflows/**"
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller fpdf pandas colorama
+
+      - name: Build executable
+        run: |
+          pyinstaller --onefile scan4secrets.py
+        shell: bash
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: scan4secrets-${{ runner.os }}
+          path: dist/scan4secrets*
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: ./artifacts
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ github.run_number }}
+          tag_name: v${{ github.run_number }}
+          files: ./artifacts/**/*.*
