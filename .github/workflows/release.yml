@@ -2,21 +2,17 @@ name: Build and Release
 
 on:
   push:
+    branches: [main]
     paths:
       - "patterns.json"
       - "scan4secrets.py"
       - ".github/workflows/**"
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
+  build-windows:
+    runs-on: windows-latest
+    name: Build Windows Executable
 
     steps:
       - name: Checkout repo
@@ -30,34 +26,66 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          pip install pyinstaller fpdf pandas colorama
+          pip install pyinstaller
 
-      - name: Build executable
-        run: |
-          pyinstaller --onefile scan4secrets.py
-        shell: bash
+      - name: Build EXE
+        run: pyinstaller --onefile scan4secrets.py
 
-      - name: Upload artifact
+      - name: Upload EXE artifact
         uses: actions/upload-artifact@v3
         with:
-          name: scan4secrets-${{ runner.os }}
-          path: dist/scan4secrets*
+          name: scan4secrets-windows
+          path: dist/scan4secrets.exe
 
-  release:
-    name: Create Release
-    needs: build
+  build-linux:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    name: Package for Debian (.deb)
 
     steps:
-      - name: Download all artifacts
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller
+          sudo apt-get update && sudo apt-get install -y ruby-dev build-essential
+          sudo gem install --no-document fpm
+
+      - name: Build binary
+        run: pyinstaller --onefile scan4secrets.py
+
+      - name: Package as .deb
+        run: |
+          mkdir -p deb-package/usr/local/bin
+          cp dist/scan4secrets deb-package/usr/local/bin/scan4secrets
+          fpm -s dir -t deb -n scan4secrets -v 1.0 deb-package/
+
+      - name: Upload DEB artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: scan4secrets-linux
+          path: "*.deb"
+
+  release:
+    needs: [build-windows, build-linux]
+    runs-on: ubuntu-latest
+    name: Create GitHub Release
+
+    steps:
+      - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:
-          path: ./artifacts
+          path: dist
 
-      - name: Create GitHub Release
+      - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          name: Release ${{ github.run_number }}
           tag_name: v${{ github.run_number }}
-          files: ./artifacts/**/*.*
+          name: Release ${{ github.run_number }}
+          files: dist/**/*
