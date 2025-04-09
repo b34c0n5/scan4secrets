@@ -1,11 +1,9 @@
-name: Build and Package
+name: Release
 
 on:
   push:
-    paths:
-      - 'patterns/**'
-      - 'src/**'
-      - '.github/workflows/**'
+    tags:
+      - 'v*.*.*'
 
 jobs:
   build-linux:
@@ -24,20 +22,20 @@ jobs:
       - name: Install Dependencies
         run: pip install -r requirements.txt
 
-      - name: Create DEB package
+      - name: Build .deb Package
         run: |
           mkdir -p output/linux
           fpm -s python -t deb -n scan4secrets --prefix=/usr/local .
 
-      - name: Upload DEB Artifact
+      - name: Upload Linux Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: scan4secrets-deb
+          name: scan4secrets-linux
           path: output/linux/*.deb
           if-no-files-found: error
 
   build-windows:
-    name: Build Windows Executable
+    name: Build Windows EXE
     runs-on: windows-latest
 
     steps:
@@ -52,15 +50,15 @@ jobs:
       - name: Install Dependencies
         run: pip install -r requirements.txt pyinstaller
 
-      - name: Build EXE
+      - name: Build .exe
         run: |
           pyinstaller --onefile src/main.py --name scan4secrets
           mkdir output\windows
-          copy dist\scan4secrets.exe output\windows\
+          move dist\scan4secrets.exe output\windows\
 
-      - name: Upload EXE Artifact
+      - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: scan4secrets-exe
+          name: scan4secrets-windows
           path: output/windows/scan4secrets.exe
           if-no-files-found: error
