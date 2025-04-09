@@ -30,7 +30,7 @@ jobs:
         run: pyinstaller --onefile scan4secrets.py
 
       - name: Upload EXE
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v3
         with:
           name: scan4secrets-windows
           path: dist/scan4secrets.exe
@@ -58,7 +58,7 @@ jobs:
           fpm -s dir -t deb -n scan4secrets -v 1.0.0 -C scan4secrets .
 
       - name: Upload DEB
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v3
         with:
           name: scan4secrets-linux
           path: ./*.deb
@@ -70,13 +70,13 @@ jobs:
 
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v3.0.2
+        uses: actions/download-artifact@v3
         with:
           path: dist
 
       - name: Publish to GitHub Releases
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/**/*
+          files: dist/**/* 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
