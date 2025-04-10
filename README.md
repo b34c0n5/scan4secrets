@@ -1,7 +1,5 @@
 # Report 
-Report will be saved in the same folder like 
-![image](https://github.com/user-attachments/assets/46506bec-26c4-4caa-810d-282a973688ab)
-
+Report will be saved in the project folder  
 
 # How to install
 
@@ -19,20 +17,29 @@ python scanner.py --path /path/to/code
 
 - Generate multiple output formats (Excel, CSV, PDF):
 ```bash
-python scanner.py --path /path/to/code --formats excel pdf csv html --output scan_report
+python scan4secrets.py --path /path/to/code --formats excel pdf csv html --output scan_report
 ```
 
 - Output as HTML only
 ```bash
-python scanner.py --path /var/www/html --formats html --output web_secrets
+python scan4secrets.py --path /var/www/html --formats html --output web_secrets
 ```
 
-# Sample Output 
+# Sample Output On Linux
 
-![image](https://github.com/user-attachments/assets/07576fed-ae93-44c3-9427-10432fb1fcd3)
-![image](https://github.com/user-attachments/assets/22d53214-9f4d-49d6-b735-308ce1daa49c)
+![image](https://github.com/user-attachments/assets/5e58380d-afde-42ff-95b3-785ac5ebc822)
+![image](https://github.com/user-attachments/assets/6e459b0a-5844-4963-8381-0b855a626db9)
 
 
-# Feel free to add more rules
+# Sample Output in Windows
+![image](https://github.com/user-attachments/assets/da55c8dd-ff5b-4ab8-8fef-69b0778683aa)
+![image](https://github.com/user-attachments/assets/94c39090-5abe-4e5f-bf42-381597a710ed)
+![image](https://github.com/user-attachments/assets/52439c7e-ff47-49ae-a00e-6765b01d1de4)
+
+
+# Feel Free to Add More Rules and Don't Miss Any Secrets :)
+
+> **Credit:** [m14r41](https://www.linkedin.com/in/m14r41/)
+
 
 
