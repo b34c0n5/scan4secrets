@@ -12,7 +12,7 @@ pip install -r requirements.txt
 # How to use
 - Scan a directory and generate an Excel file:
 ```bash
-python scanner.py --path /path/to/code
+python scan4secrets.py --path /path/to/code
 ```
 
 - Generate multiple output formats (Excel, CSV, PDF):
