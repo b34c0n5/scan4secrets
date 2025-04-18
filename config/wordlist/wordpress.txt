@@ -1,0 +1,7 @@
+wp-config.php
+wp-config-sample.php
+.htaccess
+wp-settings.php
+wp-admin/.htaccess
+xmlrpc.php
+wp-content/debug.log
