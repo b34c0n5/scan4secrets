@@ -63,6 +63,11 @@ python main.py --path /var/www/html --formats html --output web_secrets
 ---
 
 # Sample Output for Websites
+
+```bash
+python3 main.py --url m14r41.in
+```
+
 ![image](https://github.com/user-attachments/assets/a0563755-36cc-450c-974d-64b114b059eb)
 ![image](https://github.com/user-attachments/assets/0b2e6a94-fcef-4157-b622-6f705f3076fc)
 ![image](https://github.com/user-attachments/assets/2e9701d6-b475-4193-a398-a17bd4641816)
