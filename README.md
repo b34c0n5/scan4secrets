@@ -1,5 +1,34 @@
+
+
+
+# 🕵️‍♂️ `scan4secrets` : Overview
+
+
+A lightweight, high-performance secret scanner built for both SAST 🔍 & DAST 🌐.
+
+
+💥 **Key Features:**
+
+- 🧠 **400+ advanced detection rules** to uncover secrets, tokens, keys, and misconfigs.
+- 📂 Supports scanning across **260+ file extensions**.
+- 🛠️ Tailored **wordlists** for real-world tech stacks:
+  - 🧰 `CloudProvider-Service`
+  - 🐳 `Docker-Compose-Kubernetes`
+  - 🔐 `Keys-SSH-Certificate`
+  - 🚀 `Node.js-Express.js`
+  - ⚙️ `OtherConfig-CI-DevOps`
+  - 🐍 `Python-Django-Flask`
+  - 🎨 `React-Next.js-Vite-Frontend`
+  - ⚡ `common`, `.env`, `php-laravel-symfony-drupal`, `wordpress` and more...
+- 🧾 Output formats: **CSV**, **Excel**, **PDF**, **HTML**
+- 🎯 Custom **output paths** supported for integration into pipelines & workflows.
+
+---
+
+
+
 # Report 
-Report will be saved in the project folder  
+Report will be saved in the current working directory  
 
 # How to install
 
@@ -12,32 +41,43 @@ pip install -r requirements.txt
 # How to use
 - Scan a directory and generate an Excel file:
 ```bash
-python scan4secrets.py --path /path/to/code
+python3 main.py --path /path/to/code
 ```
 
 - Generate multiple output formats (Excel, CSV, PDF):
 ```bash
-python scan4secrets.py --path /path/to/code --formats excel pdf csv html --output scan_report
+python main.py --path /path/to/code --formats excel pdf csv html --output scan_report
 ```
 
 - Output as HTML only
 ```bash
-python scan4secrets.py --path /var/www/html --formats html --output web_secrets
+python main.py --path /var/www/html --formats html --output web_secrets
 ```
 
-# Sample Output On Linux
 
-![image](https://github.com/user-attachments/assets/5e58380d-afde-42ff-95b3-785ac5ebc822)
-![image](https://github.com/user-attachments/assets/6e459b0a-5844-4963-8381-0b855a626db9)
-
-
-# Sample Output in Windows
-![image](https://github.com/user-attachments/assets/da55c8dd-ff5b-4ab8-8fef-69b0778683aa)
-![image](https://github.com/user-attachments/assets/94c39090-5abe-4e5f-bf42-381597a710ed)
-![image](https://github.com/user-attachments/assets/52439c7e-ff47-49ae-a00e-6765b01d1de4)
+# Sample Output for SAST ( Source Code Review)
+![image](https://github.com/user-attachments/assets/d2b05f4a-eddd-42e4-bfd1-198b3a8bf395)
+![image](https://github.com/user-attachments/assets/badd8bd9-0875-4a10-9a83-6c91d454b996)
 
 
-# Feel Free to Add More Rules and Don't Miss Any Secrets :)
+---
+
+# Sample Output for Websites
+![image](https://github.com/user-attachments/assets/a0563755-36cc-450c-974d-64b114b059eb)
+![image](https://github.com/user-attachments/assets/0b2e6a94-fcef-4157-b622-6f705f3076fc)
+![image](https://github.com/user-attachments/assets/2e9701d6-b475-4193-a398-a17bd4641816)
+![image](https://github.com/user-attachments/assets/99b545b4-65e2-4391-83b2-b12fd580e343)
+
+
+
+
+
+
+
+
+# Contribution:
+> Feel free to contribute, thank you :)
+
 
 > **Credit:** [m14r41](https://www.linkedin.com/in/m14r41/)
 
