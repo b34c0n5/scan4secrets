@@ -5,3 +5,6 @@ rich
 fpdf
 beautifulsoup4
 colorama
+openpyxl
+python-docx
+
